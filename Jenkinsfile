@@ -15,7 +15,11 @@ pipeline {
             steps {
                 script {
                     // print branch name
-                    echo "Ahihi test pull Running pipeline for Branch : ${env.BRANCH_NAME}"
+                    echo "Running pipeline for Branch : ${env.BRANCH_NAME}"
+
+                    // Enhanced debug output
+                    echo "All changed files:"
+                    echo "${changedFiles}"
 
                     // Get changed files between current and previous commit
                     def changedFiles = ""
@@ -45,6 +49,10 @@ pipeline {
                             env.CHANGED_SERVICES = env.CHANGED_SERVICES + " " + service
                         }
                     }
+
+                    // After detecting changes
+                    echo "Detected changes in services: ${env.CHANGED_SERVICES}"
+                    
                     // If no specific service changes detected, check for common changes
                     if (env.CHANGED_SERVICES == "") {
                         if (changedFiles.contains("pom.xml") || 
@@ -70,7 +78,7 @@ pipeline {
             steps {
                 script {
                     def serviceList = env.CHANGED_SERVICES.trim().split(" ")
-                    
+                    echo "Services to be tested: ${serviceList}"
                     // Create a GitHub check for the test stage
                     checkout([$class: 'GitSCM', branches: [[name: '${GIT_COMMIT}']], extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false]]])
                     
@@ -225,6 +233,26 @@ pipeline {
             }
         }
     }
+    stage('Verify Changes') {
+        steps {
+            script {
+                echo "Verification Report:"
+                echo "============================"
+                echo "Changed Services: ${env.CHANGED_SERVICES}"
+                
+                if (env.CHANGED_SERVICES.contains("spring-petclinic-visits-service")) {
+                    echo "✓ Visits Service changes detected correctly"
+                }
+                
+                if (env.CHANGED_SERVICES.contains("spring-petclinic-api-gateway")) {
+                    echo "✓ API Gateway changes detected correctly"
+                }
+                
+                // Add checks for other services if needed
+            }
+        }
+    }
+    
     post {
         success {
             script {
