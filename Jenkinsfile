@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     // print branch name
-                    echo "Running pipeline for Branch : ${env.BRANCH_NAME}"
+                    echo "Ahihi test pull Running pipeline for Branch : ${env.BRANCH_NAME}"
 
                     // Get changed files between current and previous commit
                     def changedFiles = ""
