@@ -30,5 +30,4 @@ public class CustomersServiceApplication {
 		SpringApplication.run(CustomersServiceApplication.class, args);
 	}
 }
-
 // PR test 2
